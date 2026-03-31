@@ -33,7 +33,7 @@ export default function Home() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="mb-6"
         >
-          <img src={LOGO} alt="TKD Top Trumps" className="w-64 md:w-80 drop-shadow-2xl mix-blend-lighten" />
+          <img src={LOGO} alt="TKD Top Trumps" className="w-64 md:w-80 drop-shadow-2xl" style={{ mixBlendMode: 'lighten', filter: 'drop-shadow(0 0 20px rgba(201,168,76,0.4))' }} />
         </motion.div>
 
         {/* Subtitle */}
@@ -52,7 +52,7 @@ export default function Home() {
           transition={{ delay: 0.6, duration: 0.8 }}
           className="text-white/60 font-['Rajdhani'] text-base tracking-wider mb-12 text-center"
         >
-          80 Black Belt Warriors · 6 Epic Categories
+          100 Black Belt Warriors · 6 Epic Categories
         </motion.p>
 
         {/* Card preview stack */}
@@ -89,8 +89,16 @@ export default function Home() {
             className="relative group px-10 py-4 bg-[#E8001D] text-white font-['Black_Han_Sans'] text-xl tracking-wider rounded-lg overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95"
             style={{ boxShadow: '0 0 30px rgba(232,0,29,0.4), 0 4px 20px rgba(0,0,0,0.5)' }}
           >
-            <span className="relative z-10">⚔ PLAY NOW</span>
+            <span className="relative z-10">⚔ 1 PLAYER</span>
             <div className="absolute inset-0 bg-gradient-to-r from-[#E8001D] to-[#A80015] group-hover:from-[#FF1A35] group-hover:to-[#C80019] transition-all duration-300" />
+          </button>
+
+          <button
+            onClick={() => navigate("/multiplayer")}
+            className="relative group px-10 py-4 bg-[#1a1a2e] text-white font-['Black_Han_Sans'] text-xl tracking-wider rounded-lg overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95 border border-[#C9A84C]/60"
+            style={{ boxShadow: '0 0 20px rgba(201,168,76,0.2), 0 4px 20px rgba(0,0,0,0.5)' }}
+          >
+            <span className="relative z-10">👥 2 PLAYERS</span>
           </button>
 
           <button
@@ -137,6 +145,17 @@ export default function Home() {
         >
           태권도 · TAEKWONDO · BLACK BELT WARRIORS
         </motion.p>
+
+        {/* Buy link */}
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.8, duration: 0.8 }}
+          onClick={() => navigate("/purchase")}
+          className="mt-4 px-6 py-2 rounded-full border border-[#C9A84C]/40 text-[#C9A84C]/70 font-['Rajdhani'] text-sm tracking-wider hover:border-[#C9A84C] hover:text-[#C9A84C] transition-all"
+        >
+          💳 Get Full Access — £2.99
+        </motion.button>
       </div>
     </div>
   );
