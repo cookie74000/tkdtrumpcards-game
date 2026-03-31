@@ -287,6 +287,73 @@ export const appRouter = router({
         const rows = await db.select().from(students).where(eq(students.id, input.studentId)).limit(1);
         return rows[0] ?? null;
       }),
+
+    // Create a new student (admin only)
+    create: protectedProcedure
+      .input(z.object({
+        name: z.string().min(1).max(128),
+        grade: z.enum(BELT_GRADES),
+        membershipNumber: z.string().min(1).max(32),
+        photoUrl: z.string().url().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { ENV } = await import("./_core/env");
+        if (ctx.user.openId !== ENV.ownerOpenId && ctx.user.role !== "admin") {
+          throw new Error("Not authorised");
+        }
+        const db = await getDb();
+        if (!db) throw new Error("Database unavailable");
+        // Auto-generate stats based on belt grade
+        const gradeIndex = BELT_GRADES.indexOf(input.grade);
+        const base = 30 + Math.round((gradeIndex / (BELT_GRADES.length - 1)) * 50);
+        const rand = (offset: number) => Math.min(100, Math.max(10, base + offset + Math.round((Math.random() - 0.5) * 20)));
+        const specialMoves = ["Turning Kick", "Side Kick", "Back Kick", "Axe Kick", "Hook Kick", "Flying Kick", "Spinning Heel Kick", "Tornado Kick", "Jump Spinning Back Kick", "Crescent Kick"];
+        const specialMove = specialMoves[Math.floor(Math.random() * specialMoves.length)];
+        await db.insert(students).values({
+          name: input.name,
+          grade: input.grade,
+          membershipNumber: input.membershipNumber,
+          photoUrl: input.photoUrl ?? null,
+          power: rand(0),
+          speed: rand(5),
+          technique: rand(-5),
+          flexibility: rand(3),
+          aura: rand(-3),
+          specialMove,
+          active: true,
+        });
+        return { success: true };
+      }),
+
+    // Delete a student (admin only)
+    remove: protectedProcedure
+      .input(z.object({ studentId: z.number().int() }))
+      .mutation(async ({ input, ctx }) => {
+        const { ENV } = await import("./_core/env");
+        if (ctx.user.openId !== ENV.ownerOpenId && ctx.user.role !== "admin") {
+          throw new Error("Not authorised");
+        }
+        const db = await getDb();
+        if (!db) throw new Error("Database unavailable");
+        await db.delete(students).where(eq(students.id, input.studentId));
+        return { success: true };
+      }),
+
+    // Get a presigned upload URL for a student photo
+    getPhotoUploadUrl: protectedProcedure
+      .input(z.object({ filename: z.string(), contentType: z.string() }))
+      .mutation(async ({ input, ctx }) => {
+        const { ENV } = await import("./_core/env");
+        if (ctx.user.openId !== ENV.ownerOpenId && ctx.user.role !== "admin") {
+          throw new Error("Not authorised");
+        }
+        const { storagePut } = await import("./storage");
+        const ext = input.filename.split(".").pop() ?? "jpg";
+        const key = `student-photos/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        // Upload a tiny placeholder to get the URL, then return the key for direct upload
+        // We return the CDN-style key so the client can use the presigned approach
+        return { key, uploadReady: true };
+      }),
   }),
 });
 

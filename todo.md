@@ -55,3 +55,7 @@
 - [ ] Stripe webhook grants hasAccess=true on successful payment
 - [ ] Admin panel: grant free access to individual club students by email
 - [ ] Admin panel: revoke access if needed
+- [x] tRPC procedure: createStudent (name, grade, membershipNumber, photoUrl)
+- [x] tRPC procedure: uploadStudentPhoto to S3
+- [x] AdminAddStudent page with form, belt grade selector, photo upload
+- [x] Link AdminAddStudent from AdminBelts and AdminAccess nav

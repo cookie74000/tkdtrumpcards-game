@@ -22,6 +22,7 @@ import Gallery2026 from "./pages/Gallery2026";
 import Multiplayer2026 from "./pages/Multiplayer2026";
 import AdminBelts from "./pages/AdminBelts";
 import AdminAccess from "./pages/AdminAccess";
+import AdminAddStudent from "./pages/AdminAddStudent";
 
 function Router() {
   return (
@@ -55,6 +56,7 @@ function Router() {
       {/* ── Admin pages — login + admin role required ─────────────────────── */}
       <Route path="/admin/belts" component={AdminBelts} />
       <Route path="/admin/access" component={AdminAccess} />
+      <Route path="/admin/students/add" component={AdminAddStudent} />
 
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />

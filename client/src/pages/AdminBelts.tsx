@@ -296,7 +296,7 @@ export default function AdminBelts() {
             >
               ← HOME
             </button>
-            <div>
+            <div className="flex-1">
               <h1
                 className="text-[#F5C800] font-black text-xl uppercase leading-none"
                 style={{ fontFamily: "'Anton', sans-serif" }}
@@ -307,6 +307,18 @@ export default function AdminBelts() {
                 Find a student and update their belt grade instantly
               </p>
             </div>
+            <button
+              onClick={() => navigate("/admin/students/add")}
+              className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all hover:scale-105 active:scale-95"
+              style={{
+                background: "linear-gradient(135deg, #F5C800, #E6A800)",
+                color: "#000",
+                fontFamily: "'Rajdhani', sans-serif",
+                boxShadow: "0 2px 12px rgba(245,200,0,0.3)",
+              }}
+            >
+              ➕ Add Student
+            </button>
           </div>
 
           <input
