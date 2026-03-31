@@ -5,6 +5,7 @@ import { useState, useCallback } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { students2026, Student2026, BELT_COLOURS } from "../lib/students2026";
+import { trpc } from "@/lib/trpc";
 
 const PLACEHOLDER = "https://d2xsxph8kpxj0f.cloudfront.net/310519663205307184/79kvvEBJspWmci3JJyfyv4/tkd-card-placeholder-DxJvGfTWVpELbNvbfDPNWD.webp";
 
@@ -236,6 +237,26 @@ export default function Game2026() {
     }, 2200);
   }, [selectedStat, playerCard, cpuCard, playerDeck, cpuDeck]);
 
+  const submitScore = trpc.leaderboard.submit.useMutation();
+  const [scoreSubmitted, setScoreSubmitted] = useState(false);
+  const [submitName, setSubmitName] = useState("");
+  const [showNameInput, setShowNameInput] = useState(false);
+
+  const handleSubmitScore = () => {
+    if (!submitName.trim()) return;
+    submitScore.mutate({
+      playerName: submitName.trim(),
+      edition: "2026",
+      mode: "solo",
+      wins: playerScore,
+      losses: cpuScore,
+      draws: 0,
+      totalCards: playerScore + cpuScore,
+    }, {
+      onSuccess: () => { setScoreSubmitted(true); setShowNameInput(false); },
+    });
+  };
+
   const restart = () => {
     const all = shuffle(students2026);
     const half = Math.floor(all.length / 2);
@@ -271,6 +292,48 @@ export default function Game2026() {
           <p className="text-white/60 mb-6" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
             Final score — You: {playerScore} · CPU: {cpuScore}
           </p>
+          {/* Leaderboard submission */}
+          {!scoreSubmitted ? (
+            <div className="mb-4">
+              {!showNameInput ? (
+                <button
+                  onClick={() => setShowNameInput(true)}
+                  className="w-full py-3 mb-3 rounded-lg font-black text-sm uppercase"
+                  style={{ background: "rgba(245,200,0,0.15)", border: "1px solid rgba(245,200,0,0.4)", color: "#F5C800", fontFamily: "'Anton', sans-serif" }}
+                >
+                  🏆 SAVE TO LEADERBOARD
+                </button>
+              ) : (
+                <div className="flex gap-2 mb-3">
+                  <input
+                    type="text"
+                    value={submitName}
+                    onChange={e => setSubmitName(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleSubmitScore()}
+                    placeholder="Enter your name..."
+                    maxLength={20}
+                    autoFocus
+                    className="flex-1 rounded-lg px-3 py-2 text-white placeholder-white/30 outline-none"
+                    style={{ background: "rgba(245,200,0,0.08)", border: "1px solid rgba(245,200,0,0.4)", fontFamily: "'Rajdhani', sans-serif" }}
+                  />
+                  <button
+                    onClick={handleSubmitScore}
+                    disabled={!submitName.trim() || submitScore.isPending}
+                    className="px-4 py-2 rounded-lg font-black text-sm text-black disabled:opacity-50"
+                    style={{ background: "#F5C800", fontFamily: "'Anton', sans-serif" }}
+                  >
+                    {submitScore.isPending ? '...' : 'SAVE'}
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="mb-4 text-center">
+              <p className="text-[#F5C800] text-sm" style={{ fontFamily: "'Rajdhani', sans-serif" }}>✅ Score saved!</p>
+              <button onClick={() => navigate('/leaderboard')} className="text-white/40 hover:text-white/70 text-xs underline mt-1" style={{ fontFamily: "'Rajdhani', sans-serif" }}>View Leaderboard →</button>
+            </div>
+          )}
+
           <div className="flex flex-col gap-3">
             <button
               onClick={restart}

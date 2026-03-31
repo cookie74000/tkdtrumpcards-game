@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { blackbelts, shuffleDeck, STAT_LABELS, STAT_COLORS, STAT_ICONS, type BlackBelt, type StatKey } from "@/lib/blackbelts";
+import { trpc } from "@/lib/trpc";
 
 const CARD_BACK = "https://d2xsxph8kpxj0f.cloudfront.net/310519663205307184/79kvvEBJspWmci3JJyfyv4/tkd-card-back-esYavXz3ruiAtQRiiR62fH.webp";
 
@@ -267,6 +268,28 @@ export default function Game() {
   const playerCardCount = playerDeck.length + (playerCard ? 1 : 0);
   const cpuCardCount = cpuDeck.length + (cpuCard ? 1 : 0);
 
+  const submitScore = trpc.leaderboard.submit.useMutation();
+  const [scoreSubmitted, setScoreSubmitted] = useState(false);
+  const [submitName, setSubmitName] = useState("");
+  const [showNameInput, setShowNameInput] = useState(false);
+
+  const handleSubmitScore = () => {
+    if (!submitName.trim()) return;
+    const playerWonFinal = playerCardCount > cpuCardCount;
+    const isDrawFinal = playerCardCount === cpuCardCount;
+    submitScore.mutate({
+      playerName: submitName.trim(),
+      edition: "blackbelt",
+      mode: "solo",
+      wins: playerWins,
+      losses: cpuWins,
+      draws: roundCount - playerWins - cpuWins,
+      totalCards: roundCount,
+    }, {
+      onSuccess: () => { setScoreSubmitted(true); setShowNameInput(false); },
+    });
+  };
+
   if (phase === 'game_over') {
     const playerWon = playerCardCount > cpuCardCount;
     const isDraw = playerCardCount === cpuCardCount;
@@ -306,6 +329,45 @@ export default function Game() {
               <div className="text-white/50 font-['Rajdhani'] text-sm">CPU Wins</div>
             </div>
           </div>
+
+          {/* Leaderboard submission */}
+          {!scoreSubmitted ? (
+            <div className="mb-6">
+              {!showNameInput ? (
+                <button
+                  onClick={() => setShowNameInput(true)}
+                  className="w-full py-3 mb-3 border border-[#C9A84C]/40 text-[#C9A84C] font-['Black_Han_Sans'] text-base rounded-lg hover:bg-[#C9A84C]/10 transition-colors"
+                >
+                  🏆 SAVE TO LEADERBOARD
+                </button>
+              ) : (
+                <div className="flex gap-2 mb-3">
+                  <input
+                    type="text"
+                    value={submitName}
+                    onChange={e => setSubmitName(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleSubmitScore()}
+                    placeholder="Enter your name..."
+                    maxLength={20}
+                    autoFocus
+                    className="flex-1 bg-white/5 border border-[#C9A84C]/40 rounded-lg px-3 py-2 text-white placeholder-white/30 focus:outline-none focus:border-[#C9A84C] font-['Rajdhani'] text-base"
+                  />
+                  <button
+                    onClick={handleSubmitScore}
+                    disabled={!submitName.trim() || submitScore.isPending}
+                    className="px-4 py-2 bg-[#C9A84C] text-black font-['Black_Han_Sans'] text-sm rounded-lg disabled:opacity-50 transition-all"
+                  >
+                    {submitScore.isPending ? '...' : 'SAVE'}
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="mb-6 text-center">
+              <p className="text-[#C9A84C] font-['Rajdhani'] text-sm">✅ Score saved to leaderboard!</p>
+              <button onClick={() => navigate('/leaderboard')} className="text-white/40 hover:text-white/70 font-['Rajdhani'] text-xs underline mt-1 transition-colors">View Leaderboard →</button>
+            </div>
+          )}
 
           <div className="flex flex-col sm:flex-row gap-3">
             <button

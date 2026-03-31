@@ -25,3 +25,14 @@
 - [x] 2026 Edition — belt colour strip on every card
 - [x] Navigation link from Black Belt Edition home to 2026 Edition
 - [ ] Replace 2026 Edition placeholder names/photos with real student data (awaiting user)
+- [x] Leaderboard database table (scores, player name, edition, wins, losses, date)
+- [x] tRPC procedures: submit score, get top scores, get recent scores
+- [x] Leaderboard page with tabs for Black Belt Edition / 2026 Edition / All Time
+- [x] Post-game score submission modal (enter name + save score)
+- [x] Wire score submission into 1-player game (both editions)
+- [x] Wire score submission into 2-player game (both editions)
+- [x] Navigation links to leaderboard from both home pages
+- [x] Challenge a Friend share button in Black Belt Edition multiplayer lobby
+- [x] Challenge a Friend share button in 2026 Edition multiplayer lobby
+- [x] Auto-join room when opening invite link (?room=XXXX in URL)
+- [x] Native share sheet on mobile (Web Share API), clipboard fallback on desktop

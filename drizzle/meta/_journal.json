@@ -15,6 +15,13 @@
       "when": 1774990113030,
       "tag": "0001_parallel_skaar",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1774995212845,
+      "tag": "0002_panoramic_jazinda",
+      "breakpoints": true
     }
   ]
 }

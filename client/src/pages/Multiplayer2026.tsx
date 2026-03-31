@@ -2,7 +2,7 @@
 // Reuses the same Socket.io room system as the Black Belt Edition
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useLocation } from "wouter";
+import { useLocation, useSearch } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { io, Socket } from "socket.io-client";
 import { students2026, Student2026, BELT_COLOURS } from "../lib/students2026";
@@ -27,11 +27,13 @@ function BeltBadge({ belt, beltColor }: { belt: string; beltColor: string }) {
 
 export default function Multiplayer2026() {
   const [, navigate] = useLocation();
+  const searchString = useSearch();
   const socketRef = useRef<Socket | null>(null);
+  const urlRoomCode = new URLSearchParams(searchString).get("room")?.toUpperCase() ?? "";
   const [phase, setPhase] = useState<GamePhase>("lobby");
   const [playerName, setPlayerName] = useState("");
   const [roomCode, setRoomCode] = useState("");
-  const [joinCode, setJoinCode] = useState("");
+  const [joinCode, setJoinCode] = useState(urlRoomCode);
   const [isHost, setIsHost] = useState(false);
   const [opponentName, setOpponentName] = useState("");
   const [myCard, setMyCard] = useState<Student2026 | null>(null);
@@ -138,6 +140,22 @@ export default function Multiplayer2026() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleShare = useCallback(() => {
+    const url = `${window.location.origin}/2026/multiplayer?room=${roomCode}`;
+    if (navigator.share) {
+      navigator.share({
+        title: "TKD Top Trumps 2026 — Challenge!",
+        text: `${playerName} is challenging you to a 2026 Edition battle! Join room ${roomCode}`,
+        url,
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+      });
+    }
+  }, [roomCode, playerName]);
+
   // Lobby
   if (phase === "lobby") {
     return (
@@ -203,12 +221,21 @@ export default function Multiplayer2026() {
           <div className="text-6xl mb-4 animate-pulse">⏳</div>
           <h2 className="text-2xl font-black text-[#F5C800] uppercase mb-2" style={{ fontFamily: "'Anton', sans-serif" }}>WAITING FOR OPPONENT</h2>
           <p className="text-white/50 mb-6" style={{ fontFamily: "'Rajdhani', sans-serif" }}>Share this code with your friend:</p>
-          <div className="flex items-center gap-3 justify-center mb-6">
+          <div className="flex items-center gap-3 justify-center mb-4">
             <div className="text-5xl font-black text-[#F5C800] tracking-[0.3em]" style={{ fontFamily: "'Anton', sans-serif" }}>{roomCode}</div>
             <button onClick={copyCode} className="px-3 py-2 rounded-lg text-sm font-bold" style={{ background: "rgba(245,200,0,0.15)", color: "#F5C800", fontFamily: "'Rajdhani', sans-serif" }}>
               {copied ? "✓ COPIED" : "COPY"}
             </button>
           </div>
+          {/* Challenge a Friend share button */}
+          <button
+            onClick={handleShare}
+            className="mx-auto flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm tracking-wider transition-all hover:scale-105 active:scale-95 mb-4"
+            style={{ background: copied ? "rgba(245,200,0,0.2)" : "#F5C800", color: "#0D0D0D", fontFamily: "'Anton', sans-serif" }}
+          >
+            {copied ? "✅ LINK COPIED!" : "📲 CHALLENGE A FRIEND"}
+          </button>
+          <p className="text-white/30 text-sm mb-4" style={{ fontFamily: "'Rajdhani', sans-serif" }}>Sends a link that drops them straight into this room</p>
           <p className="text-white/30 text-sm" style={{ fontFamily: "'Rajdhani', sans-serif" }}>Both players need the app open on their device</p>
         </motion.div>
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#F5C800]" />

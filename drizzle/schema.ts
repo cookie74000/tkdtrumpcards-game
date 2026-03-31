@@ -38,3 +38,19 @@ export const purchases = mysqlTable("purchases", {
 
 export type Purchase = typeof purchases.$inferSelect;
 export type InsertPurchase = typeof purchases.$inferInsert;
+
+// Leaderboard scores for both editions
+export const scores = mysqlTable("scores", {
+  id: int("id").autoincrement().primaryKey(),
+  playerName: varchar("playerName", { length: 64 }).notNull(),
+  edition: mysqlEnum("edition", ["blackbelt", "2026"]).notNull(),
+  mode: mysqlEnum("mode", ["solo", "multiplayer"]).notNull().default("solo"),
+  wins: int("wins").notNull().default(0),
+  losses: int("losses").notNull().default(0),
+  draws: int("draws").notNull().default(0),
+  totalCards: int("totalCards").notNull().default(0),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Score = typeof scores.$inferSelect;
+export type InsertScore = typeof scores.$inferInsert;

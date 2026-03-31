@@ -2,7 +2,7 @@
 // Players create or join a room via a 4-letter code, then battle in real time
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useLocation } from "wouter";
+import { useLocation, useSearch } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { io, Socket } from "socket.io-client";
 import {
@@ -122,14 +122,19 @@ function CardDisplay({ card, isMe, isWinner, isLoser }: {
 
 export default function Multiplayer() {
   const [, navigate] = useLocation();
+  const searchString = useSearch();
   const socketRef = useRef<Socket | null>(null);
+
+  // Pre-fill room code from invite link (?room=XXXX)
+  const urlRoomCode = new URLSearchParams(searchString).get("room")?.toUpperCase() ?? "";
 
   // Lobby state
   const [screen, setScreen] = useState<Screen>("lobby");
   const [playerName, setPlayerName] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const [myRoomCode, setMyRoomCode] = useState("");
-  const [joinCode, setJoinCode] = useState("");
+  const [joinCode, setJoinCode] = useState(urlRoomCode);
+  const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [opponentName, setOpponentName] = useState("");
   const [myIndex, setMyIndex] = useState<0 | 1>(0);
@@ -253,6 +258,23 @@ export default function Multiplayer() {
     socketRef.current?.emit("join_room", { roomId: joinCode.toUpperCase(), playerName: playerName.trim() });
     setScreen("waiting");
   };
+
+  // Share invite link
+  const handleShare = useCallback(() => {
+    const url = `${window.location.origin}/multiplayer?room=${myRoomCode}`;
+    if (navigator.share) {
+      navigator.share({
+        title: "TKD Top Trumps — Challenge!",
+        text: `${playerName} is challenging you to a Top Trumps battle! Join room ${myRoomCode}`,
+        url,
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+      });
+    }
+  }, [myRoomCode, playerName]);
 
   const handlePickStat = useCallback((stat: StatKey) => {
     if (!isMyTurn) return;
@@ -384,8 +406,19 @@ export default function Multiplayer() {
                         {myRoomCode}
                       </span>
                     </div>
-                    <p className="text-white/40 text-sm mt-3">Share this code with your opponent</p>
+                    <p className="text-white/40 text-sm mt-3">Share this code — or use the button below</p>
                   </div>
+
+                  {/* Challenge a Friend share button */}
+                  <button
+                    onClick={handleShare}
+                    className="mx-auto flex items-center gap-2 px-6 py-3 rounded-xl font-['Black_Han_Sans'] text-sm tracking-wider transition-all hover:scale-105 active:scale-95"
+                    style={{ background: copied ? "rgba(201,168,76,0.2)" : "rgba(232,0,29,0.15)", border: "1px solid rgba(232,0,29,0.5)", color: copied ? "#C9A84C" : "#E8001D" }}
+                  >
+                    {copied ? "✅ LINK COPIED!" : "📲 CHALLENGE A FRIEND"}
+                  </button>
+                  <p className="text-white/30 text-xs">Sends a link that drops them straight into this room</p>
+
                   <div className="flex items-center justify-center gap-3">
                     <div className="w-2 h-2 rounded-full bg-[#C9A84C] animate-bounce" style={{ animationDelay: "0ms" }} />
                     <div className="w-2 h-2 rounded-full bg-[#C9A84C] animate-bounce" style={{ animationDelay: "150ms" }} />

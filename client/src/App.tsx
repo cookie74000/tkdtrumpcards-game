@@ -12,6 +12,8 @@ import Gallery from "./pages/Gallery";
 import Multiplayer from "./pages/Multiplayer";
 import Purchase from "./pages/Purchase";
 
+import Leaderboard from "./pages/Leaderboard";
+
 // 2026 Edition
 import Home2026 from "./pages/Home2026";
 import Game2026 from "./pages/Game2026";
@@ -27,6 +29,7 @@ function Router() {
       <Route path="/gallery" component={Gallery} />
       <Route path="/multiplayer" component={Multiplayer} />
       <Route path="/purchase" component={Purchase} />
+      <Route path="/leaderboard" component={Leaderboard} />
 
       {/* 2026 Edition */}
       <Route path="/2026" component={Home2026} />
