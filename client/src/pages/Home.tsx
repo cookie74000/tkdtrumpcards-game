@@ -156,6 +156,18 @@ export default function Home() {
         >
           💳 Get Full Access — £2.99
         </motion.button>
+
+        {/* 2026 Edition banner */}
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2.0, duration: 0.8 }}
+          onClick={() => navigate("/2026")}
+          className="mt-3 px-6 py-2 rounded-full font-['Rajdhani'] text-sm tracking-wider font-bold transition-all hover:scale-105"
+          style={{ background: 'rgba(245,200,0,0.15)', border: '1px solid rgba(245,200,0,0.5)', color: '#F5C800' }}
+        >
+          ⭐ NEW: 2026 Edition — 175 Warriors · All Belts
+        </motion.button>
       </div>
     </div>
   );

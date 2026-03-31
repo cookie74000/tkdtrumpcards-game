@@ -16,3 +16,12 @@
 - [ ] Replace placeholder photos with real black belt photos (awaiting user uploads)
 - [ ] Add school name/branding once provided by user
 - [ ] Claim Stripe sandbox and switch to live keys after KYC
+- [x] 2026 Edition — 175 student cards across all belt ranks (White to Black)
+- [x] 2026 Edition — Train Taekwondo Schools logo and yellow/black branding
+- [x] 2026 Edition — hero background with TKD action imagery
+- [x] 2026 Edition — 1-player vs CPU game mode
+- [x] 2026 Edition — 2-player Wi-Fi multiplayer with room codes
+- [x] 2026 Edition — gallery with belt rank filter and search
+- [x] 2026 Edition — belt colour strip on every card
+- [x] Navigation link from Black Belt Edition home to 2026 Edition
+- [ ] Replace 2026 Edition placeholder names/photos with real student data (awaiting user)
