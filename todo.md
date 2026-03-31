@@ -48,3 +48,10 @@
 - [x] Research legendary martial artists (Bruce Lee, Chuck Norris, etc.) with images
 - [x] Seed Grand Masters and Legends into the database
 - [x] Admin belt upgrade panel
+- [ ] Add hasAccess flag to users table
+- [ ] tRPC procedure: checkAccess (returns whether current user has paid/been granted access)
+- [ ] AuthGate component — redirects to login if not authenticated, to purchase if no access
+- [ ] Wrap all game pages (Game, Gallery, Multiplayer — both editions) with AuthGate
+- [ ] Stripe webhook grants hasAccess=true on successful payment
+- [ ] Admin panel: grant free access to individual club students by email
+- [ ] Admin panel: revoke access if needed

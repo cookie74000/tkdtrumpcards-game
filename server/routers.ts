@@ -59,15 +59,85 @@ export const appRouter = router({
       }),
 
     hasAccess: publicProcedure.query(async ({ ctx }) => {
-      if (!ctx.user) return { hasAccess: false };
+      if (!ctx.user) return { hasAccess: false, reason: "unauthenticated" };
+      // Owner always has access
+      const { ENV } = await import("./_core/env");
+      if (ctx.user.openId === ENV.ownerOpenId || ctx.user.role === "admin") {
+        return { hasAccess: true, reason: "admin" };
+      }
+      // Check hasAccess flag on user record
+      if (ctx.user.hasAccess) return { hasAccess: true, reason: "granted" };
+      // Fallback: check purchases table
       const db = await getDb();
-      if (!db) return { hasAccess: false };
+      if (!db) return { hasAccess: false, reason: "db_unavailable" };
       const result = await db
         .select()
         .from(purchases)
         .where(eq(purchases.userId, ctx.user.id))
         .limit(1);
-      return { hasAccess: result.length > 0 };
+      return { hasAccess: result.length > 0, reason: result.length > 0 ? "purchase" : "none" };
+    }),
+
+    // Admin: grant free access to a user by email
+    grantAccess: protectedProcedure
+      .input(z.object({
+        email: z.string().email(),
+        grantedBy: z.enum(["admin", "owner"]).default("admin"),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { ENV } = await import("./_core/env");
+        if (ctx.user.openId !== ENV.ownerOpenId && ctx.user.role !== "admin") {
+          throw new Error("Not authorised");
+        }
+        const db = await getDb();
+        if (!db) throw new Error("Database unavailable");
+        const { like } = await import("drizzle-orm");
+        const { users } = await import("../drizzle/schema");
+        const found = await db.select().from(users).where(like(users.email, input.email)).limit(1);
+        if (!found.length) throw new Error("User not found with that email");
+        await db.update(users)
+          .set({ hasAccess: true, accessGrantedBy: input.grantedBy })
+          .where(eq(users.id, found[0].id));
+        return { success: true, name: found[0].name };
+      }),
+
+    // Admin: revoke access from a user by email
+    revokeAccess: protectedProcedure
+      .input(z.object({ email: z.string().email() }))
+      .mutation(async ({ input, ctx }) => {
+        const { ENV } = await import("./_core/env");
+        if (ctx.user.openId !== ENV.ownerOpenId && ctx.user.role !== "admin") {
+          throw new Error("Not authorised");
+        }
+        const db = await getDb();
+        if (!db) throw new Error("Database unavailable");
+        const { like } = await import("drizzle-orm");
+        const { users } = await import("../drizzle/schema");
+        const found = await db.select().from(users).where(like(users.email, input.email)).limit(1);
+        if (!found.length) throw new Error("User not found with that email");
+        await db.update(users)
+          .set({ hasAccess: false, accessGrantedBy: undefined })
+          .where(eq(users.id, found[0].id));
+        return { success: true };
+      }),
+
+    // Admin: list all users with their access status
+    listUsers: protectedProcedure.query(async ({ ctx }) => {
+      const { ENV } = await import("./_core/env");
+      if (ctx.user.openId !== ENV.ownerOpenId && ctx.user.role !== "admin") {
+        throw new Error("Not authorised");
+      }
+      const db = await getDb();
+      if (!db) return [];
+      const { users } = await import("../drizzle/schema");
+      return await db.select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        hasAccess: users.hasAccess,
+        accessGrantedBy: users.accessGrantedBy,
+        createdAt: users.createdAt,
+      }).from(users).orderBy(desc(users.createdAt));
     }),
   }),
 

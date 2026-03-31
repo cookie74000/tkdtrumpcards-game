@@ -4,6 +4,7 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import AuthGate from "./components/AuthGate";
 
 // Black Belt Edition
 import Home from "./pages/Home";
@@ -20,24 +21,40 @@ import Game2026 from "./pages/Game2026";
 import Gallery2026 from "./pages/Gallery2026";
 import Multiplayer2026 from "./pages/Multiplayer2026";
 import AdminBelts from "./pages/AdminBelts";
+import AdminAccess from "./pages/AdminAccess";
 
 function Router() {
   return (
     <Switch>
-      {/* Black Belt Edition */}
+      {/* ── Public pages — no login required ─────────────────────────────── */}
       <Route path="/" component={Home} />
-      <Route path="/game" component={Game} />
-      <Route path="/gallery" component={Gallery} />
-      <Route path="/multiplayer" component={Multiplayer} />
       <Route path="/purchase" component={Purchase} />
       <Route path="/leaderboard" component={Leaderboard} />
-
-      {/* 2026 Edition */}
       <Route path="/2026" component={Home2026} />
-      <Route path="/2026/game" component={Game2026} />
-      <Route path="/2026/gallery" component={Gallery2026} />
-      <Route path="/2026/multiplayer" component={Multiplayer2026} />
+
+      {/* ── Protected pages — login + purchase required ───────────────────── */}
+      <Route path="/game">
+        <AuthGate><Game /></AuthGate>
+      </Route>
+      <Route path="/gallery">
+        <AuthGate><Gallery /></AuthGate>
+      </Route>
+      <Route path="/multiplayer">
+        <AuthGate><Multiplayer /></AuthGate>
+      </Route>
+      <Route path="/2026/game">
+        <AuthGate><Game2026 /></AuthGate>
+      </Route>
+      <Route path="/2026/gallery">
+        <AuthGate><Gallery2026 /></AuthGate>
+      </Route>
+      <Route path="/2026/multiplayer">
+        <AuthGate><Multiplayer2026 /></AuthGate>
+      </Route>
+
+      {/* ── Admin pages — login + admin role required ─────────────────────── */}
       <Route path="/admin/belts" component={AdminBelts} />
+      <Route path="/admin/access" component={AdminAccess} />
 
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />

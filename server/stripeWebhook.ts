@@ -68,7 +68,7 @@ export function registerStripeWebhook(app: Express) {
           return;
         }
 
-        // If we have a userId, record the purchase
+        // If we have a userId, record the purchase and grant access
         if (userId) {
           try {
             await db.insert(purchases).values({
@@ -78,7 +78,11 @@ export function registerStripeWebhook(app: Express) {
               amountPence: session.amount_total ?? 299,
               currency: session.currency ?? "gbp",
             }).onDuplicateKeyUpdate({ set: { stripeSessionId: session.id } });
-            console.log(`[Webhook] Purchase recorded for user ${userId}`);
+            // Grant access on the user record
+            await db.update(users)
+              .set({ hasAccess: true, accessGrantedBy: "purchase" })
+              .where(eq(users.id, userId));
+            console.log(`[Webhook] Purchase recorded + access granted for user ${userId}`);
           } catch (err) {
             console.error("[Webhook] Failed to record purchase:", err);
           }
@@ -95,7 +99,11 @@ export function registerStripeWebhook(app: Express) {
                 amountPence: session.amount_total ?? 299,
                 currency: session.currency ?? "gbp",
               }).onDuplicateKeyUpdate({ set: { stripeSessionId: session.id } });
-              console.log(`[Webhook] Purchase recorded for guest email ${email}`);
+              // Grant access on the user record
+              await db.update(users)
+                .set({ hasAccess: true, accessGrantedBy: "purchase" })
+                .where(eq(users.id, userResult[0].id));
+              console.log(`[Webhook] Purchase recorded + access granted for guest email ${email}`);
             }
           }
         }
