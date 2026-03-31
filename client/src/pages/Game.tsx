@@ -1,6 +1,6 @@
-// TKD Top Trumps — Game Page
+// TKD Trump Cards — Game Page
 // Design: Dark Dojo Warrior — obsidian black, crimson, gold
-// Full Top Trumps gameplay: player vs computer, stat selection, win/lose logic
+// Full TKD Trump Cards gameplay: player vs computer, stat selection, win/lose logic
 
 import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "wouter";

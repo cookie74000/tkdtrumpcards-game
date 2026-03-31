@@ -1,4 +1,4 @@
-// TKD Top Trumps — Two-Player Wi-Fi Multiplayer Page
+// TKD Trump Cards — Two-Player Wi-Fi Multiplayer Page
 // Players create or join a room via a 4-letter code, then battle in real time
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -264,8 +264,8 @@ export default function Multiplayer() {
     const url = `${window.location.origin}/multiplayer?room=${myRoomCode}`;
     if (navigator.share) {
       navigator.share({
-        title: "TKD Top Trumps — Challenge!",
-        text: `${playerName} is challenging you to a Top Trumps battle! Join room ${myRoomCode}`,
+        title: "TKD Trump Cards — Challenge!",
+        text: `${playerName} is challenging you to a TKD Trump Cards battle! Join room ${myRoomCode}`,
         url,
       }).catch(() => {});
     } else {

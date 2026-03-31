@@ -1,4 +1,4 @@
-// TKD Top Trumps — 2026 Edition Multiplayer
+// TKD Trump Cards — 2026 Edition Multiplayer
 // Reuses the same Socket.io room system as the Black Belt Edition
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -144,7 +144,7 @@ export default function Multiplayer2026() {
     const url = `${window.location.origin}/2026/multiplayer?room=${roomCode}`;
     if (navigator.share) {
       navigator.share({
-        title: "TKD Top Trumps 2026 — Challenge!",
+        title: "TKD Trump Cards 2026 — Challenge!",
         text: `${playerName} is challenging you to a 2026 Edition battle! Join room ${roomCode}`,
         url,
       }).catch(() => {});

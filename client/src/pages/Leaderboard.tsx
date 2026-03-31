@@ -1,4 +1,4 @@
-// TKD Top Trumps — Shared Leaderboard Page
+// TKD Trump Cards — Shared Leaderboard Page
 // Shows top scores across Black Belt Edition and 2026 Edition
 
 import { useState } from "react";

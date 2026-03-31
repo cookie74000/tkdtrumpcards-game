@@ -1,4 +1,4 @@
-// TKD Top Trumps — Black Belt Card Data
+// TKD Trump Cards — Black Belt Card Data
 // All 80 black belts with generated stats
 // Stats are out of 100. Special Move is a unique named technique.
 // Photos: placeholder CDN URL used until real photos are uploaded.

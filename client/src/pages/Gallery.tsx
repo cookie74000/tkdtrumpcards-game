@@ -1,4 +1,4 @@
-// TKD Top Trumps — Gallery Page
+// TKD Trump Cards — Gallery Page
 // Design: Dark Dojo Warrior — obsidian black, crimson, gold
 // Browse all 80 black belt cards with search and filter
 

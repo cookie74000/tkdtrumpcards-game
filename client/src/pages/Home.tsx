@@ -1,4 +1,4 @@
-// TKD Top Trumps — Home Page
+// TKD Trump Cards — Home Page
 // Design: Dark Dojo Warrior — obsidian black, crimson, gold
 // Full-bleed hero with animated entrance, CTA to start game
 
@@ -33,7 +33,7 @@ export default function Home() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="mb-6"
         >
-          <img src={LOGO} alt="TKD Top Trumps" className="w-64 md:w-80 drop-shadow-2xl" style={{ mixBlendMode: 'lighten', filter: 'drop-shadow(0 0 20px rgba(201,168,76,0.4))' }} />
+          <img src={LOGO} alt="TKD Trump Cards" className="w-64 md:w-80 drop-shadow-2xl" style={{ mixBlendMode: 'lighten', filter: 'drop-shadow(0 0 20px rgba(201,168,76,0.4))' }} />
         </motion.div>
 
         {/* Subtitle */}

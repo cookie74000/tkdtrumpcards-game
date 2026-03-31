@@ -1,5 +1,6 @@
-// TKD Top Trumps — Purchase / Paywall Page
-// Shows pricing, features, and triggers Stripe Checkout
+// TKD Trump Cards — Purchase Page
+// Train Taekwondo Schools yellow/black branding
+// Covers both editions with a single £2.99 one-time purchase
 
 import { useState } from "react";
 import { useLocation } from "wouter";
@@ -7,15 +8,36 @@ import { motion } from "framer-motion";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
-const LOGO = "https://d2xsxph8kpxj0f.cloudfront.net/310519663205307184/79kvvEBJspWmci3JJyfyv4/tkd-logo-DKUyabQdvztx3NkUEWhTb5.webp";
+const TRAIN_TKD_LOGO = "https://d2xsxph8kpxj0f.cloudfront.net/310519663205307184/79kvvEBJspWmci3JJyfyv4/tkd-logo-DKUyabQdvztx3NkUEWhTb5.webp";
+
+const EDITIONS = [
+  {
+    name: "Black Belt Edition",
+    colour: "#C9A84C",
+    bg: "rgba(201,168,76,0.08)",
+    border: "rgba(201,168,76,0.4)",
+    icon: "🥋",
+    cards: "100 Black Belt Cards",
+    desc: "Every black belt ever produced by Train Taekwondo Schools",
+  },
+  {
+    name: "2026 Edition",
+    colour: "#F5C800",
+    bg: "rgba(245,200,0,0.08)",
+    border: "rgba(245,200,0,0.4)",
+    icon: "🏅",
+    cards: "175 Student Cards",
+    desc: "All current students across every belt rank — White to Black",
+  },
+];
 
 const FEATURES = [
-  { icon: "🥋", title: "100 Black Belt Cards", desc: "Every black belt ever produced by the school" },
-  { icon: "⚔", title: "1-Player vs CPU", desc: "Battle the computer with the full 100-card deck" },
-  { icon: "👥", title: "2-Player Wi-Fi Mode", desc: "Challenge a friend on the same network in real time" },
-  { icon: "🏆", title: "6 Epic Categories", desc: "Power, Speed, Technique, Flexibility, Aura & Special Move" },
+  { icon: "⚔️", title: "1-Player vs CPU", desc: "Battle the computer across both full card decks" },
+  { icon: "👥", title: "2-Player Online Mode", desc: "Challenge a friend anywhere in the world in real time" },
+  { icon: "📲", title: "Challenge a Friend", desc: "Share an invite link — they join your room instantly" },
+  { icon: "🏆", title: "Live Leaderboard", desc: "Compete for the top spot on the school rankings board" },
   { icon: "📱", title: "Works on Any Device", desc: "Phone, tablet, or computer — no app store needed" },
-  { icon: "♾️", title: "Lifetime Access", desc: "Pay once, play forever — no subscriptions" },
+  { icon: "♾️", title: "Lifetime Access", desc: "Pay once, play forever — no subscriptions ever" },
 ];
 
 export default function Purchase() {
@@ -42,102 +64,211 @@ export default function Purchase() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0F] text-white font-['Rajdhani']">
+    <div
+      className="min-h-screen text-white"
+      style={{ background: "#0D0D0D", fontFamily: "'Rajdhani', sans-serif" }}
+    >
+      {/* Top accent bar */}
+      <div className="h-1 w-full" style={{ background: "#F5C800" }} />
+
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+      <div
+        className="flex items-center justify-between px-4 py-3"
+        style={{ borderBottom: "1px solid rgba(245,200,0,0.15)" }}
+      >
         <button
           onClick={() => navigate("/")}
-          className="text-white/60 hover:text-white text-sm tracking-wider transition-colors"
+          className="text-white/50 hover:text-white text-sm tracking-wider transition-colors"
         >
           ← HOME
         </button>
-        <h1 className="font-['Black_Han_Sans'] text-[#C9A84C] tracking-wider text-sm">GET FULL ACCESS</h1>
+        <span
+          className="text-xs tracking-widest uppercase"
+          style={{ color: "#F5C800", fontFamily: "'Anton', sans-serif" }}
+        >
+          GET FULL ACCESS
+        </span>
         <span />
       </div>
 
-      <div className="max-w-md mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-lg mx-auto px-4 py-8 space-y-8">
 
-        {/* Logo & Title */}
+        {/* Logo & School Name */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
-          <img src={LOGO} alt="TKD Top Trumps" className="w-32 mx-auto mb-4 mix-blend-lighten" />
-          <h2 className="font-['Black_Han_Sans'] text-3xl text-white mb-1">BLACK BELT EDITION</h2>
-          <p className="text-white/50 text-sm">The official card game of your Taekwondo school</p>
+          <div
+            className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4"
+            style={{ background: "rgba(245,200,0,0.1)", border: "2px solid rgba(245,200,0,0.3)" }}
+          >
+            <span className="text-4xl">🥋</span>
+          </div>
+          <h1
+            className="text-3xl font-black uppercase mb-1"
+            style={{ color: "#F5C800", fontFamily: "'Anton', sans-serif", letterSpacing: "0.05em" }}
+          >
+            TKD Trump Cards
+          </h1>
+          <p className="text-white/50 text-sm tracking-wider">Train Taekwondo Schools · Official Card Game</p>
+        </motion.div>
+
+        {/* What's included — both editions */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="space-y-3"
+        >
+          <p
+            className="text-center text-xs tracking-widest uppercase mb-4"
+            style={{ color: "rgba(245,200,0,0.6)" }}
+          >
+            Both Editions Included
+          </p>
+          {EDITIONS.map((ed, i) => (
+            <motion.div
+              key={ed.name}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.15 + i * 0.08 }}
+              className="flex items-center gap-4 rounded-xl p-4"
+              style={{ background: ed.bg, border: `1px solid ${ed.border}` }}
+            >
+              <span className="text-3xl">{ed.icon}</span>
+              <div className="flex-1">
+                <p
+                  className="font-black text-base uppercase"
+                  style={{ color: ed.colour, fontFamily: "'Anton', sans-serif" }}
+                >
+                  {ed.name}
+                </p>
+                <p className="text-white/80 text-sm font-semibold">{ed.cards}</p>
+                <p className="text-white/40 text-xs">{ed.desc}</p>
+              </div>
+              <div
+                className="text-xs font-black px-2 py-1 rounded-lg"
+                style={{ background: ed.colour, color: "#0D0D0D", fontFamily: "'Anton', sans-serif" }}
+              >
+                INCLUDED
+              </div>
+            </motion.div>
+          ))}
         </motion.div>
 
         {/* Price Card */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 }}
-          className="rounded-2xl border-2 border-[#C9A84C]/60 p-6 text-center"
+          transition={{ delay: 0.25 }}
+          className="rounded-2xl p-6 text-center"
           style={{
-            background: "linear-gradient(135deg, #1a1a2e 0%, #0d0d1a 100%)",
-            boxShadow: "0 0 40px rgba(201,168,76,0.15)",
+            background: "linear-gradient(135deg, #1a1600 0%, #0d0d0d 100%)",
+            border: "2px solid rgba(245,200,0,0.5)",
+            boxShadow: "0 0 50px rgba(245,200,0,0.12)",
           }}
         >
-          <p className="text-[#C9A84C]/60 text-xs tracking-widest uppercase mb-2">One-Time Purchase</p>
-          <div className="flex items-start justify-center gap-1 mb-1">
-            <span className="text-[#C9A84C] font-['Rajdhani'] text-2xl mt-2">£</span>
-            <span className="font-['Black_Han_Sans'] text-[#C9A84C] text-7xl leading-none">2</span>
-            <span className="font-['Black_Han_Sans'] text-[#C9A84C] text-4xl mt-4">.99</span>
+          <p
+            className="text-xs tracking-widest uppercase mb-3"
+            style={{ color: "rgba(245,200,0,0.6)" }}
+          >
+            One-Time Purchase · Both Editions
+          </p>
+          <div className="flex items-start justify-center gap-1 mb-2">
+            <span className="text-2xl mt-2" style={{ color: "#F5C800" }}>£</span>
+            <span
+              className="leading-none"
+              style={{ color: "#F5C800", fontFamily: "'Anton', sans-serif", fontSize: "5rem" }}
+            >
+              2
+            </span>
+            <span
+              className="mt-4 text-4xl"
+              style={{ color: "#F5C800", fontFamily: "'Anton', sans-serif" }}
+            >
+              .99
+            </span>
           </div>
-          <p className="text-white/40 text-xs mb-6">Pay once · Play forever · No subscription</p>
+          <p className="text-white/30 text-xs mb-6">Pay once · Play forever · No subscription</p>
 
           <button
             onClick={handleBuy}
             disabled={loading}
-            className="w-full py-4 bg-[#E8001D] text-white font-['Black_Han_Sans'] text-xl tracking-wider rounded-xl transition-all hover:bg-[#C80019] active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
-            style={{ boxShadow: "0 0 30px rgba(232,0,29,0.4)" }}
+            className="w-full py-4 font-black text-xl tracking-wider rounded-xl transition-all hover:opacity-90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              background: loading ? "rgba(245,200,0,0.4)" : "#F5C800",
+              color: "#0D0D0D",
+              fontFamily: "'Anton', sans-serif",
+              boxShadow: loading ? "none" : "0 0 30px rgba(245,200,0,0.3)",
+            }}
           >
-            {loading ? "⏳ Loading..." : "⚔ BUY NOW — £2.99"}
+            {loading ? "⏳ LOADING..." : "🥋 BUY NOW — £2.99"}
           </button>
 
-          <p className="text-white/30 text-xs mt-3">
+          <p className="text-white/25 text-xs mt-3">
             🔒 Secure payment via Stripe · All major cards accepted
           </p>
         </motion.div>
 
-        {/* Features */}
+        {/* Features list */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.35 }}
           className="space-y-3"
         >
-          <h3 className="font-['Black_Han_Sans'] text-[#C9A84C] text-sm tracking-wider text-center">WHAT YOU GET</h3>
-          {FEATURES.map((f, i) => (
-            <motion.div
-              key={f.title}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.25 + i * 0.07 }}
-              className="flex items-start gap-4 p-3 rounded-xl bg-white/5 border border-white/10"
-            >
-              <span className="text-2xl">{f.icon}</span>
-              <div>
-                <p className="font-['Black_Han_Sans'] text-white text-sm">{f.title}</p>
-                <p className="text-white/50 text-xs">{f.desc}</p>
-              </div>
-            </motion.div>
-          ))}
+          <h3
+            className="text-xs tracking-widest uppercase text-center mb-4"
+            style={{ color: "rgba(245,200,0,0.6)" }}
+          >
+            Everything You Get
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {FEATURES.map((f, i) => (
+              <motion.div
+                key={f.title}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 + i * 0.06 }}
+                className="flex items-start gap-3 p-3 rounded-xl"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+              >
+                <span className="text-xl">{f.icon}</span>
+                <div>
+                  <p className="text-white font-bold text-sm">{f.title}</p>
+                  <p className="text-white/40 text-xs">{f.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
 
         {/* Test card notice */}
-        <div className="rounded-xl bg-yellow-500/10 border border-yellow-500/30 p-4 text-center">
-          <p className="text-yellow-400 text-xs font-['Rajdhani']">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="rounded-xl p-4 text-center"
+          style={{ background: "rgba(245,200,0,0.06)", border: "1px solid rgba(245,200,0,0.2)" }}
+        >
+          <p className="text-xs" style={{ color: "rgba(245,200,0,0.7)" }}>
             🧪 <strong>Test mode active</strong> — Use card <strong>4242 4242 4242 4242</strong> with any future date and any CVC to test the payment flow.
           </p>
+        </motion.div>
+
+        {/* School footer */}
+        <div className="text-center pb-6">
+          <p className="text-white/20 text-xs tracking-widest uppercase">
+            Train Taekwondo Schools · Est. 2026
+          </p>
+          <p className="text-white/10 text-xs mt-1">태권도 · TAEKWONDO · BLACK BELT WARRIORS</p>
         </div>
 
-        {/* Footer */}
-        <p className="text-center text-white/20 text-xs pb-4">
-          태권도 · TAEKWONDO · BLACK BELT WARRIORS
-        </p>
       </div>
+
+      {/* Bottom accent bar */}
+      <div className="h-1 w-full" style={{ background: "#F5C800" }} />
     </div>
   );
 }

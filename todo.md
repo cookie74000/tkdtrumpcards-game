@@ -36,3 +36,6 @@
 - [x] Challenge a Friend share button in 2026 Edition multiplayer lobby
 - [x] Auto-join room when opening invite link (?room=XXXX in URL)
 - [x] Native share sheet on mobile (Web Share API), clipboard fallback on desktop
+- [x] Rebrand all pages from "TKD Top Trumps" / "Top Trumps" to "TKD Trump Cards"
+- [x] Update app title in vite config and index.html
+- [x] Rebuild Purchase page with Train TKD yellow/black branding and Stripe checkout

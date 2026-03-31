@@ -1,4 +1,4 @@
-// TKD Top Trumps — 2026 Edition
+// TKD Trump Cards — 2026 Edition
 // 175 students across all TAGB belt ranks
 // Stats: Power (1-100), Speed (1-100), Technique (1-100), Flexibility (1-100), Aura (1-100), Special Move (string), Belt (string)
 

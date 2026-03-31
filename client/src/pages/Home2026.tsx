@@ -1,4 +1,4 @@
-// TKD Top Trumps — 2026 Edition Home Page
+// TKD Trump Cards — 2026 Edition Home Page
 // Design: Train Taekwondo Schools brand — electric yellow #F5C800, deep black, bold sans-serif
 
 import { useLocation } from "wouter";

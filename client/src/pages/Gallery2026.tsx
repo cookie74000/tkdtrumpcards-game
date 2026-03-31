@@ -1,4 +1,4 @@
-// TKD Top Trumps — 2026 Edition Gallery
+// TKD Trump Cards — 2026 Edition Gallery
 // Browse all 175 student cards, filter by belt rank, search by name
 
 import { useState, useMemo } from "react";

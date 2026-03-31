@@ -1,4 +1,4 @@
-// TKD Top Trumps — 2026 Edition Game Page
+// TKD Trump Cards — 2026 Edition Game Page
 // 1-Player vs CPU with Train Taekwondo yellow/black branding
 
 import { useState, useCallback } from "react";
