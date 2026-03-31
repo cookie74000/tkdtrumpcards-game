@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { boolean, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -54,3 +54,48 @@ export const scores = mysqlTable("scores", {
 
 export type Score = typeof scores.$inferSelect;
 export type InsertScore = typeof scores.$inferInsert;
+
+// TAGB belt grades in order
+export const BELT_GRADES = [
+  "White Belt - 10th Kup",
+  "White Belt  Yellow Tag - 9th Kup",
+  "Yellow Belt - 8th Kup",
+  "Yellow Belt Green Tag - 7th Kup",
+  "Green Belt - 6th Kup",
+  "Green Belt Blue Tag - 5th Kup",
+  "Blue Belt - 4th Kup",
+  "Blue Belt Red Tag - 3rd Kup",
+  "Red Belt - 2nd Kup",
+  "Red Belt Black Tag - 1st Kup",
+  "Black Belt - 1st Dan",
+  "Black Belt - 1st Dan 1st*",
+  "Black Belt - 1st Dan 2nd*",
+  "Black Belt - 2nd Dan",
+  "Black Belt - 3rd Dan",
+  "Black Belt - 4th Dan",
+  "Black Belt - 5th Dan",
+] as const;
+
+export type BeltGrade = typeof BELT_GRADES[number];
+
+// Club students — used for the 2026 Edition cards
+export const students = mysqlTable("students", {
+  id: int("id").autoincrement().primaryKey(),
+  membershipNumber: varchar("membershipNumber", { length: 32 }).notNull().unique(),
+  name: varchar("name", { length: 128 }).notNull(),
+  grade: varchar("grade", { length: 128 }).notNull().default("White Belt - 10th Kup"),
+  photoUrl: varchar("photoUrl", { length: 512 }),
+  active: boolean("active").notNull().default(true),
+  // Stats (auto-generated, can be overridden)
+  power: int("power").notNull().default(50),
+  speed: int("speed").notNull().default(50),
+  technique: int("technique").notNull().default(50),
+  flexibility: int("flexibility").notNull().default(50),
+  aura: int("aura").notNull().default(50),
+  specialMove: varchar("specialMove", { length: 128 }).notNull().default("Taekwondo Strike"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Student = typeof students.$inferSelect;
+export type InsertStudent = typeof students.$inferInsert;

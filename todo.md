@@ -39,3 +39,12 @@
 - [x] Rebrand all pages from "TKD Top Trumps" / "Top Trumps" to "TKD Trump Cards"
 - [x] Update app title in vite config and index.html
 - [x] Rebuild Purchase page with Train TKD yellow/black branding and Stripe checkout
+- [x] Students database table with name, belt grade, membership number
+- [x] Seed database with 123 real members from CSV
+- [x] tRPC procedures: list students, search, update belt grade
+- [x] Admin belt upgrade page — search by name, click new grade, save instantly
+- [ ] Wire 2026 Edition to use live DB student data
+- [x] Scrape TAGB Grand Masters from tagb.biz
+- [x] Research legendary martial artists (Bruce Lee, Chuck Norris, etc.) with images
+- [x] Seed Grand Masters and Legends into the database
+- [x] Admin belt upgrade panel

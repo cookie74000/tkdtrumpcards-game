@@ -19,6 +19,7 @@ import Home2026 from "./pages/Home2026";
 import Game2026 from "./pages/Game2026";
 import Gallery2026 from "./pages/Gallery2026";
 import Multiplayer2026 from "./pages/Multiplayer2026";
+import AdminBelts from "./pages/AdminBelts";
 
 function Router() {
   return (
@@ -36,6 +37,7 @@ function Router() {
       <Route path="/2026/game" component={Game2026} />
       <Route path="/2026/gallery" component={Gallery2026} />
       <Route path="/2026/multiplayer" component={Multiplayer2026} />
+      <Route path="/admin/belts" component={AdminBelts} />
 
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />

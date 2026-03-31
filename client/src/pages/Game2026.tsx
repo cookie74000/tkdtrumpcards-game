@@ -4,7 +4,7 @@
 import { useState, useCallback } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { students2026, Student2026, BELT_COLOURS } from "../lib/students2026";
+import { allCards2026, Student2026, BELT_COLOURS } from "../lib/students2026";
 import { trpc } from "@/lib/trpc";
 
 const PLACEHOLDER = "https://d2xsxph8kpxj0f.cloudfront.net/310519663205307184/79kvvEBJspWmci3JJyfyv4/tkd-card-placeholder-DxJvGfTWVpELbNvbfDPNWD.webp";
@@ -181,8 +181,8 @@ function Card2026({
 
 export default function Game2026() {
   const [, navigate] = useLocation();
-  const [playerDeck, setPlayerDeck] = useState<Student2026[]>(() => shuffle(students2026).slice(0, Math.floor(students2026.length / 2)));
-  const [cpuDeck, setCpuDeck] = useState<Student2026[]>(() => shuffle(students2026).slice(Math.floor(students2026.length / 2)));
+  const [playerDeck, setPlayerDeck] = useState<Student2026[]>(() => shuffle(allCards2026).slice(0, Math.floor(allCards2026.length / 2)));
+  const [cpuDeck, setCpuDeck] = useState<Student2026[]>(() => shuffle(allCards2026).slice(Math.floor(allCards2026.length / 2)));
   const [selectedStat, setSelectedStat] = useState<Stat | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [roundResult, setRoundResult] = useState<"player" | "cpu" | "draw" | null>(null);
@@ -258,7 +258,7 @@ export default function Game2026() {
   };
 
   const restart = () => {
-    const all = shuffle(students2026);
+    const all = shuffle(allCards2026);
     const half = Math.floor(all.length / 2);
     setPlayerDeck(all.slice(0, half));
     setCpuDeck(all.slice(half));

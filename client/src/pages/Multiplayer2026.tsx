@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useSearch } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { io, Socket } from "socket.io-client";
-import { students2026, Student2026, BELT_COLOURS } from "../lib/students2026";
+import { allCards2026, Student2026, BELT_COLOURS } from "../lib/students2026";
 
 const PLACEHOLDER = "https://d2xsxph8kpxj0f.cloudfront.net/310519663205307184/79kvvEBJspWmci3JJyfyv4/tkd-card-placeholder-DxJvGfTWVpELbNvbfDPNWD.webp";
 
@@ -76,8 +76,8 @@ export default function Multiplayer2026() {
     });
 
     socket.on("game:newRound", ({ myCard: mc, oppCard: oc, myCardsLeft: mcl, oppCardsLeft: ocl, isMyTurn: imt }: any) => {
-      const myStudent = students2026.find(s => s.id === mc.id) || mc;
-      const oppStudent = students2026.find(s => s.id === oc.id) || oc;
+      const myStudent = allCards2026.find(s => s.id === mc.id) || mc;
+      const oppStudent = allCards2026.find(s => s.id === oc.id) || oc;
       setMyCard(myStudent);
       setOppCard(oppStudent);
       setMyCardsLeft(mcl);

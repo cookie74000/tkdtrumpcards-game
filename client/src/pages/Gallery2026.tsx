@@ -4,7 +4,7 @@
 import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { students2026, Student2026, BeltRank, BELT_COLOURS } from "../lib/students2026";
+import { allCards2026, Student2026, BeltRank, BELT_COLOURS } from "../lib/students2026";
 
 const PLACEHOLDER = "https://d2xsxph8kpxj0f.cloudfront.net/310519663205307184/79kvvEBJspWmci3JJyfyv4/tkd-card-placeholder-DxJvGfTWVpELbNvbfDPNWD.webp";
 
@@ -199,7 +199,7 @@ export default function Gallery2026() {
   const [selected, setSelected] = useState<Student2026 | null>(null);
 
   const filtered = useMemo(() => {
-    return students2026.filter(s => {
+    return allCards2026.filter(s => {
       const matchSearch = s.name.toLowerCase().includes(search.toLowerCase());
       const matchBelt = beltFilter === "All" || s.belt === beltFilter;
       return matchSearch && matchBelt;
@@ -260,10 +260,10 @@ export default function Gallery2026() {
                 fontFamily: "'Rajdhani', sans-serif",
               }}
             >
-              All ({students2026.length})
+              All ({allCards2026.length})
             </button>
             {ALL_BELTS.map(belt => {
-              const count = students2026.filter(s => s.belt === belt).length;
+              const count = allCards2026.filter(s => s.belt === belt).length;
               if (count === 0) return null;
               const bc = BELT_COLOURS[belt];
               const isActive = beltFilter === belt;

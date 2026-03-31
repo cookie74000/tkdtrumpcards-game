@@ -7,7 +7,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { PRODUCTS } from "./products";
 import { getDb } from "./db";
-import { purchases, scores } from "../drizzle/schema";
+import { purchases, scores, students, BELT_GRADES } from "../drizzle/schema";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2026-03-25.dahlia",
@@ -138,6 +138,84 @@ export const appRouter = router({
           .from(scores)
           .orderBy(desc(scores.createdAt))
           .limit(input.limit);
+      }),
+  }),
+
+  // ─── STUDENT MANAGEMENT (admin belt upgrades) ──────────────────────────────
+  students: router({
+    // List all students (paginated, searchable)
+    list: publicProcedure
+      .input(z.object({
+        search: z.string().optional(),
+        grade: z.string().optional(),
+        limit: z.number().int().min(1).max(200).default(200),
+        offset: z.number().int().min(0).default(0),
+      }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return { students: [], total: 0 };
+        const { like, and } = await import("drizzle-orm");
+        let conditions: ReturnType<typeof like>[] = [];
+        if (input.search) {
+          conditions.push(like(students.name, `%${input.search}%`));
+        }
+        if (input.grade) {
+          conditions.push(like(students.grade, `%${input.grade}%`));
+        }
+        const query = conditions.length > 0
+          ? db.select().from(students).where(and(...conditions))
+          : db.select().from(students);
+        const rows = await query.limit(input.limit).offset(input.offset);
+        return { students: rows, total: rows.length };
+      }),
+
+    // Update a student's belt grade (admin only — protected by owner check)
+    updateGrade: protectedProcedure
+      .input(z.object({
+        studentId: z.number().int(),
+        grade: z.enum(BELT_GRADES),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        // Only the app owner can update grades
+        const { ENV } = await import("./_core/env");
+        if (ctx.user.openId !== ENV.ownerOpenId && ctx.user.role !== "admin") {
+          throw new Error("Not authorised");
+        }
+        const db = await getDb();
+        if (!db) throw new Error("Database unavailable");
+        await db.update(students)
+          .set({ grade: input.grade })
+          .where(eq(students.id, input.studentId));
+        return { success: true };
+      }),
+
+    // Update a student's photo URL
+    updatePhoto: protectedProcedure
+      .input(z.object({
+        studentId: z.number().int(),
+        photoUrl: z.string().url(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { ENV } = await import("./_core/env");
+        if (ctx.user.openId !== ENV.ownerOpenId && ctx.user.role !== "admin") {
+          throw new Error("Not authorised");
+        }
+        const db = await getDb();
+        if (!db) throw new Error("Database unavailable");
+        await db.update(students)
+          .set({ photoUrl: input.photoUrl })
+          .where(eq(students.id, input.studentId));
+        return { success: true };
+      }),
+
+    // Get a single student by ID
+    getById: publicProcedure
+      .input(z.object({ studentId: z.number().int() }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return null;
+        const rows = await db.select().from(students).where(eq(students.id, input.studentId)).limit(1);
+        return rows[0] ?? null;
       }),
   }),
 });
