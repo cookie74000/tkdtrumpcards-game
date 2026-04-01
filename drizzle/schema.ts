@@ -87,7 +87,10 @@ export const students = mysqlTable("students", {
   name: varchar("name", { length: 128 }).notNull(),
   grade: varchar("grade", { length: 128 }).notNull().default("White Belt - 10th Kup"),
   photoUrl: varchar("photoUrl", { length: 512 }),
+  pendingPhotoUrl: varchar("pendingPhotoUrl", { length: 512 }),
+  photoApproved: boolean("photoApproved").notNull().default(false),
   active: boolean("active").notNull().default(true),
+  archivedAt: timestamp("archivedAt"),
   // Stats (auto-generated, can be overridden)
   power: int("power").notNull().default(50),
   speed: int("speed").notNull().default(50),

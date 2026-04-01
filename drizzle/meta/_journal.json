@@ -36,6 +36,20 @@
       "when": 1774999361686,
       "tag": "0004_public_the_santerians",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1775000485331,
+      "tag": "0005_small_meltdown",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1775000744230,
+      "tag": "0006_sweet_magus",
+      "breakpoints": true
     }
   ]
 }

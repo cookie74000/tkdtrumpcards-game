@@ -325,7 +325,35 @@ export const appRouter = router({
         return { success: true };
       }),
 
-    // Delete a student (admin only)
+    // Archive a student — soft delete (sets active=false, keeps record)
+    archive: protectedProcedure
+      .input(z.object({ studentId: z.number().int() }))
+      .mutation(async ({ input, ctx }) => {
+        const { ENV } = await import("./_core/env");
+        if (ctx.user.openId !== ENV.ownerOpenId && ctx.user.role !== "admin") {
+          throw new Error("Not authorised");
+        }
+        const db = await getDb();
+        if (!db) throw new Error("Database unavailable");
+        await db.update(students).set({ active: false }).where(eq(students.id, input.studentId));
+        return { success: true };
+      }),
+
+    // Restore an archived student (sets active=true)
+    restore: protectedProcedure
+      .input(z.object({ studentId: z.number().int() }))
+      .mutation(async ({ input, ctx }) => {
+        const { ENV } = await import("./_core/env");
+        if (ctx.user.openId !== ENV.ownerOpenId && ctx.user.role !== "admin") {
+          throw new Error("Not authorised");
+        }
+        const db = await getDb();
+        if (!db) throw new Error("Database unavailable");
+        await db.update(students).set({ active: true }).where(eq(students.id, input.studentId));
+        return { success: true };
+      }),
+
+    // Delete a student permanently (admin only)
     remove: protectedProcedure
       .input(z.object({ studentId: z.number().int() }))
       .mutation(async ({ input, ctx }) => {
@@ -339,7 +367,7 @@ export const appRouter = router({
         return { success: true };
       }),
 
-    // Get a presigned upload URL for a student photo
+    // Get a presigned upload URL for a student photo (admin)
     getPhotoUploadUrl: protectedProcedure
       .input(z.object({ filename: z.string(), contentType: z.string() }))
       .mutation(async ({ input, ctx }) => {
@@ -350,9 +378,83 @@ export const appRouter = router({
         const { storagePut } = await import("./storage");
         const ext = input.filename.split(".").pop() ?? "jpg";
         const key = `student-photos/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-        // Upload a tiny placeholder to get the URL, then return the key for direct upload
-        // We return the CDN-style key so the client can use the presigned approach
         return { key, uploadReady: true };
+      }),
+
+    // Player submits a photo for approval — uploads to S3 as pendingPhotoUrl
+    submitPhoto: protectedProcedure
+      .input(z.object({
+        studentId: z.number().int(),
+        photoBase64: z.string(), // base64 encoded image
+        contentType: z.string().default("image/jpeg"),
+      }))
+      .mutation(async ({ input }) => {
+        const { storagePut } = await import("./storage");
+        const ext = input.contentType.split("/")[1] ?? "jpg";
+        const key = `pending-photos/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const buffer = Buffer.from(input.photoBase64, "base64");
+        const { url } = await storagePut(key, buffer, input.contentType);
+        const db = await getDb();
+        if (!db) throw new Error("Database unavailable");
+        await db.update(students)
+          .set({ pendingPhotoUrl: url, photoApproved: false })
+          .where(eq(students.id, input.studentId));
+        return { success: true, pendingUrl: url };
+      }),
+
+    // Admin: list students with pending photo submissions
+    listPendingPhotos: protectedProcedure.query(async ({ ctx }) => {
+      const { ENV } = await import("./_core/env");
+      if (ctx.user.openId !== ENV.ownerOpenId && ctx.user.role !== "admin") {
+        throw new Error("Not authorised");
+      }
+      const db = await getDb();
+      if (!db) return [];
+      const { isNotNull } = await import("drizzle-orm");
+      return await db.select({
+        id: students.id,
+        name: students.name,
+        grade: students.grade,
+        photoUrl: students.photoUrl,
+        pendingPhotoUrl: students.pendingPhotoUrl,
+        photoApproved: students.photoApproved,
+      }).from(students)
+        .where(isNotNull(students.pendingPhotoUrl))
+        .orderBy(desc(students.updatedAt));
+    }),
+
+    // Admin: approve a pending photo — moves pendingPhotoUrl to photoUrl
+    approvePhoto: protectedProcedure
+      .input(z.object({ studentId: z.number().int() }))
+      .mutation(async ({ input, ctx }) => {
+        const { ENV } = await import("./_core/env");
+        if (ctx.user.openId !== ENV.ownerOpenId && ctx.user.role !== "admin") {
+          throw new Error("Not authorised");
+        }
+        const db = await getDb();
+        if (!db) throw new Error("Database unavailable");
+        const rows = await db.select().from(students).where(eq(students.id, input.studentId)).limit(1);
+        if (!rows.length || !rows[0].pendingPhotoUrl) throw new Error("No pending photo found");
+        await db.update(students)
+          .set({ photoUrl: rows[0].pendingPhotoUrl, pendingPhotoUrl: null, photoApproved: true })
+          .where(eq(students.id, input.studentId));
+        return { success: true };
+      }),
+
+    // Admin: reject a pending photo — clears pendingPhotoUrl
+    rejectPhoto: protectedProcedure
+      .input(z.object({ studentId: z.number().int() }))
+      .mutation(async ({ input, ctx }) => {
+        const { ENV } = await import("./_core/env");
+        if (ctx.user.openId !== ENV.ownerOpenId && ctx.user.role !== "admin") {
+          throw new Error("Not authorised");
+        }
+        const db = await getDb();
+        if (!db) throw new Error("Database unavailable");
+        await db.update(students)
+          .set({ pendingPhotoUrl: null })
+          .where(eq(students.id, input.studentId));
+        return { success: true };
       }),
   }),
 });

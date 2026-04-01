@@ -59,3 +59,14 @@
 - [x] tRPC procedure: uploadStudentPhoto to S3
 - [x] AdminAddStudent page with form, belt grade selector, photo upload
 - [x] Link AdminAddStudent from AdminBelts and AdminAccess nav
+- [ ] tRPC procedure: archiveStudent (sets active=false, soft delete)
+- [ ] tRPC procedure: deleteStudent (permanent remove from DB)
+- [ ] Archive and Delete buttons with confirmation dialogs in AdminBelts
+- [ ] Archived students hidden from game but visible in admin with restore option
+- [ ] Add pendingPhotoUrl and photoApproved fields to students DB schema
+- [ ] tRPC: submitPhoto (player uploads pending photo), approvePhoto, rejectPhoto (admin)
+- [ ] Player Profile page — find your card by name, submit a photo for approval
+- [ ] Admin photo approval queue — see pending photos, approve or reject with one click
+- [ ] Archive/Delete buttons with confirmation dialogs in AdminBelts
+- [ ] Archived students shown separately in admin with Restore button
+- [ ] Photo upload prompt text: "Upload your best Taekwondo photo!"
